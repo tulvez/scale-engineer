@@ -1,0 +1,18 @@
+{
+  "name": "Same app on Vercel Pro + Supabase Pro",
+  "stack": [
+    {"use": "vercel:pro", "serves": ["web", "functions"]},
+    {"use": "supabase:pro", "serves": ["database", "auth", "realtime"]}
+  ],
+  "profile": {
+    "dau": 50000,
+    "requests_per_user_day": 40,
+    "dynamic_ratio": 0.5,
+    "avg_function_ms": 250,
+    "avg_cpu_ms": 30,
+    "avg_response_kb": 60,
+    "db_queries_per_request": 3,
+    "realtime_conns_per_user": 1,
+    "realtime_msgs_per_conn_min": 2
+  }
+}

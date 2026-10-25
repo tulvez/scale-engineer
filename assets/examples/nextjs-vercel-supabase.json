@@ -1,0 +1,19 @@
+{
+  "name": "Next.js SaaS on Vercel + Supabase (free tiers)",
+  "stack": [
+    {"use": "vercel:hobby", "serves": ["web", "functions"]},
+    {"use": "supabase:free", "serves": ["database", "auth", "realtime"]}
+  ],
+  "profile": {
+    "dau": 2000,
+    "commercial": false,
+    "requests_per_user_day": 40,
+    "dynamic_ratio": 0.5,
+    "avg_function_ms": 250,
+    "avg_cpu_ms": 30,
+    "avg_response_kb": 60,
+    "db_queries_per_request": 3,
+    "realtime_conns_per_user": 1,
+    "realtime_msgs_per_conn_min": 2
+  }
+}

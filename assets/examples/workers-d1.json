@@ -1,0 +1,20 @@
+{
+  "name": "API on Cloudflare Workers + D1 + KV (free)",
+  "stack": [
+    {"use": "cloudflare-workers:free", "serves": ["web", "functions"]},
+    {"use": "cloudflare-d1:free", "serves": ["database"]},
+    {"use": "cloudflare-kv:free", "serves": ["kv"]}
+  ],
+  "profile": {
+    "dau": 1000,
+    "requests_per_user_day": 30,
+    "dynamic_ratio": 1.0,
+    "avg_function_ms": 40,
+    "avg_cpu_ms": 4,
+    "db_queries_per_request": 2,
+    "db_rows_read_per_request": 30,
+    "avg_query_ms": 2,
+    "kv_reads_per_request": 1,
+    "kv_writes_per_user_day": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Node API on Railway Hobby + Neon Launch",
+  "stack": [
+    {"use": "railway:hobby", "serves": ["web", "functions"], "instances": 2, "vcpu": 1, "ram_gb": 1},
+    {"use": "neon:launch", "serves": ["database"]}
+  ],
+  "profile": {
+    "dau": 20000,
+    "requests_per_user_day": 50,
+    "dynamic_ratio": 0.6,
+    "avg_function_ms": 80,
+    "avg_cpu_ms": 15,
+    "avg_response_kb": 20,
+    "db_cu": 0.5,
+    "app_pool_size": 20
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "skill_name": "scale-engineer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "This is a Next.js app deployed on Vercel with Supabase for the database, auth and a realtime chat. We expect about 2,000 daily users after launch. Will the free plans hold up?",
+      "files": ["assets/examples/nextjs-vercel-supabase.json"],
+      "expected_output": "Identifies Vercel Hobby + Supabase Free, warns that Vercel Hobby is non-commercial, runs the calculator, reports that 2,000 DAU does not fit (database size, Vercel active CPU and CDN requests, Supabase egress are over), names the first limit, explains that free limits block or pause rather than bill, lists assumptions, and gives a scaling plan with the paid-plan cost.",
+      "assertions": [
+        "Runs scripts/capacity.py instead of quoting limits from memory",
+        "States a maximum DAU and a peak concurrent user number",
+        "Names the bottleneck limit and its platform",
+        "Mentions that Vercel Hobby is for non-commercial use",
+        "Says what happens when the free limit is reached (blocked/paused, not billed)",
+        "Lists the assumed traffic numbers",
+        "Gives at least two ordered scaling steps"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our API runs on Cloudflare Workers with D1 and KV, all on the free plan. How many users can we have, and what would the $5 Workers Paid plan change?",
+      "files": ["assets/examples/workers-d1.json"],
+      "expected_output": "Runs the free profile and a paid variant, explains the 100k requests/day Workers quota and Error 1027, D1 5 GB/500 MB storage and rows-read quotas, KV 1,000 writes/day and 1 write/s per key, the 10 ms CPU per request limit, and compares max DAU and cost for both plans.",
+      "assertions": [
+        "Computes both the free and the paid plan",
+        "Mentions the 10 ms CPU per request limit on Workers Free",
+        "Mentions that D1 is single-threaded per database or the KV per-key write limit",
+        "Gives monthly cost for the paid plan"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We have a Node API on Railway Hobby (2 instances, 1 vCPU each) and Neon. Marketing says a TV ad could bring 30,000 people in one evening. What breaks first?",
+      "files": ["assets/examples/railway-server.json"],
+      "expected_output": "Asks for or assumes the Neon plan, raises peak_factor for a spike, uses the server CPU model, reports which component saturates first at the spike, recommends a load test on staging (not production), and gives scaling steps (more instances, caching, pooled connections).",
+      "assertions": [
+        "Increases peak_factor (or models the spike explicitly) instead of using the default 3",
+        "Explains that server capacity is estimated from CPU and should be load-tested",
+        "Warns not to load-test production on a capped/free plan",
+        "Recommends the pooled Neon connection string or connection pooling"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "How many concurrent users can my app handle?",
+      "files": [],
+      "expected_output": "Detects the stack from the repository (or asks if there is none), asks only for the missing plan information in a single message, and does not assume a paid plan.",
+      "assertions": [
+        "Looks at repository config files before asking",
+        "Asks which plan each service is on, in one message",
+        "Does not assume a paid plan"
+      ]
+    }
+  ]
+}

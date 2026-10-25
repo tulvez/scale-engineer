@@ -1,0 +1,456 @@
+{
+  "schema": 1,
+  "verified": "2026-10-25",
+  "note": "Every number below was read from the official page in its `source`. Providers change limits often: if `verified` is older than 90 days, or a number decides the answer, re-open the source before relying on it. A limit marked `stated: false` was not published on the source page and is left out of the math.",
+  "metrics": {
+    "requests": "HTTP requests that reach the platform (static + dynamic)",
+    "invocations": "function / server-code executions",
+    "fn_concurrency": "concurrent function executions at peak",
+    "cpu_ms": "CPU milliseconds consumed by functions",
+    "active_cpu_hours": "Vercel Fluid active CPU hours",
+    "memory_gb_hours": "Vercel Fluid provisioned memory GB-hours (upper bound: no in-instance sharing)",
+    "gb_seconds": "function memory x wall time (AWS / Firebase style)",
+    "egress_gb": "bytes sent to users, GB",
+    "peak_rps": "requests per second at peak",
+    "db_qps": "database queries per second at peak",
+    "db_backend_conns": "database server connections busy at peak (Little's law)",
+    "db_pool_clients": "client connections opened to the pooler/database at peak",
+    "db_rows_read": "database rows / documents read",
+    "db_rows_written": "database rows / documents written",
+    "db_storage_gb": "database size, GB",
+    "db_awake_cu_hours": "serverless Postgres compute hours (Neon CU-hours)",
+    "realtime_conns": "concurrent realtime / websocket connections at peak",
+    "realtime_msgs_per_s": "realtime messages per second at peak",
+    "realtime_msgs": "realtime messages",
+    "auth_mau": "monthly active users signing in",
+    "kv_reads": "key-value reads",
+    "kv_writes": "key-value writes",
+    "redis_commands": "Redis commands",
+    "redis_cmds_per_s": "Redis commands per second at peak",
+    "credits": "Netlify credits (requests, bandwidth and compute converted with credit_costs)"
+  },
+  "platforms": {
+    "vercel": {
+      "name": "Vercel",
+      "plans": {
+        "hobby": {
+          "base_usd": 0,
+          "commercial_use": false,
+          "notes": [
+            "Hobby is for personal, non-commercial use.",
+            "Hobby is capped: usage cannot be purchased; exceeding a cap stops that resource (pause behavior is not stated on the limits page)."
+          ],
+          "limits": [
+            { "metric": "fn_concurrency", "period": "peak", "value": 30000, "kind": "hard", "label": "Function concurrency (auto-scales up to)", "source": "https://vercel.com/docs/functions/limitations" },
+            { "metric": "requests", "period": "month", "value": 1000000, "kind": "hard", "label": "CDN requests included", "source": "https://vercel.com/pricing" },
+            { "metric": "invocations", "period": "month", "value": 1000000, "kind": "hard", "label": "Function invocations", "source": "https://vercel.com/pricing" },
+            { "metric": "egress_gb", "period": "month", "value": 100, "kind": "hard", "label": "Fast Data Transfer", "source": "https://vercel.com/pricing" },
+            { "metric": "active_cpu_hours", "period": "month", "value": 4, "kind": "hard", "label": "Fluid Active CPU", "source": "https://vercel.com/pricing" },
+            { "metric": "memory_gb_hours", "period": "month", "value": 360, "kind": "hard", "label": "Fluid Provisioned Memory", "source": "https://vercel.com/pricing" }
+          ],
+          "per_request": [
+            { "check": "duration_s", "max": 300, "label": "Function max duration", "source": "https://vercel.com/docs/functions/limitations" },
+            { "check": "payload_mb", "max": 4.5, "label": "Request/response body", "source": "https://vercel.com/docs/functions/limitations" }
+          ]
+        },
+        "pro": {
+          "base_usd": 20,
+          "credit_usd": 20,
+          "commercial_use": true,
+          "notes": [
+            "Pro includes a $20 usage credit per month, then pay as you go.",
+            "New teams get a default on-demand budget of $200; a hard limit can be configured to pause projects.",
+            "Price is per developer seat ($20/seat)."
+          ],
+          "limits": [
+            { "metric": "fn_concurrency", "period": "peak", "value": 30000, "kind": "hard", "label": "Function concurrency (auto-scales up to)", "source": "https://vercel.com/docs/functions/limitations" },
+            { "metric": "requests", "period": "month", "value": 10000000, "kind": "included", "overage_usd": 2.0, "per": 1000000, "label": "CDN requests", "source": "https://vercel.com/pricing" },
+            { "metric": "egress_gb", "period": "month", "value": 1000, "kind": "included", "overage_usd": 0.15, "per": 1, "label": "Fast Data Transfer", "source": "https://vercel.com/pricing" },
+            { "metric": "invocations", "period": "month", "value": 0, "kind": "included", "overage_usd": 0.60, "per": 1000000, "label": "Function invocations (starting price)", "source": "https://vercel.com/pricing" },
+            { "metric": "active_cpu_hours", "period": "month", "value": 0, "kind": "included", "overage_usd": 0.128, "per": 1, "label": "Fluid Active CPU (starting price)", "source": "https://vercel.com/pricing" },
+            { "metric": "memory_gb_hours", "period": "month", "value": 0, "kind": "included", "overage_usd": 0.0106, "per": 1, "label": "Fluid Provisioned Memory (starting price)", "source": "https://vercel.com/pricing" }
+          ],
+          "per_request": [
+            { "check": "duration_s", "max": 800, "label": "Function max duration (1800 s in beta)", "source": "https://vercel.com/docs/functions/limitations" },
+            { "check": "payload_mb", "max": 4.5, "label": "Request/response body", "source": "https://vercel.com/docs/functions/limitations" }
+          ]
+        }
+      }
+    },
+    "cloudflare-workers": {
+      "name": "Cloudflare Workers (also Pages Functions)",
+      "plans": {
+        "free": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": [
+            "Daily quota resets at 00:00 UTC. Over the quota Cloudflare returns Error 1027 (fail closed) or bypasses the Worker (fail open).",
+            "No general requests-per-second limit.",
+            "Pages Functions requests count toward the Workers quota."
+          ],
+          "limits": [
+            { "metric": "invocations", "period": "day", "value": 100000, "kind": "hard", "label": "Worker requests per day", "source": "https://developers.cloudflare.com/workers/platform/limits/" }
+          ],
+          "per_request": [
+            { "check": "cpu_ms", "max": 10, "label": "CPU time per request", "source": "https://developers.cloudflare.com/workers/platform/limits/" },
+            { "check": "subrequests", "max": 50, "label": "Subrequests per request", "source": "https://developers.cloudflare.com/workers/platform/limits/" }
+          ]
+        },
+        "paid": {
+          "base_usd": 5,
+          "commercial_use": true,
+          "notes": [
+            "No egress or bandwidth charges.",
+            "No general requests-per-second limit; duration is not billed."
+          ],
+          "limits": [
+            { "metric": "invocations", "period": "month", "value": 10000000, "kind": "included", "overage_usd": 0.30, "per": 1000000, "label": "Worker requests", "source": "https://developers.cloudflare.com/workers/platform/pricing/" },
+            { "metric": "cpu_ms", "period": "month", "value": 30000000, "kind": "included", "overage_usd": 0.02, "per": 1000000, "label": "CPU milliseconds", "source": "https://developers.cloudflare.com/workers/platform/pricing/" }
+          ],
+          "per_request": [
+            { "check": "cpu_ms", "max": 300000, "label": "CPU time per request (default 30 s, max 5 min)", "source": "https://developers.cloudflare.com/workers/platform/limits/" },
+            { "check": "subrequests", "max": 10000, "label": "Subrequests per request", "source": "https://developers.cloudflare.com/workers/platform/limits/" }
+          ]
+        }
+      }
+    },
+    "cloudflare-d1": {
+      "name": "Cloudflare D1",
+      "plans": {
+        "free": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": [
+            "Each database is single-threaded: throughput is about 1000 / (query ms) queries per second.",
+            "Free daily quotas reset at 00:00 UTC."
+          ],
+          "limits": [
+            { "metric": "db_rows_read", "period": "day", "value": 5000000, "kind": "hard", "label": "Rows read per day", "source": "https://developers.cloudflare.com/d1/platform/limits/" },
+            { "metric": "db_rows_written", "period": "day", "value": 100000, "kind": "hard", "label": "Rows written per day", "source": "https://developers.cloudflare.com/d1/platform/limits/" },
+            { "metric": "db_storage_gb", "period": "total", "value": 0.5, "kind": "hard", "label": "Max database size", "source": "https://developers.cloudflare.com/d1/platform/limits/" },
+            { "metric": "db_qps", "period": "peak", "formula": "single_thread", "kind": "hard", "label": "Single-threaded throughput (1000 / query ms)", "source": "https://developers.cloudflare.com/d1/platform/limits/" }
+          ],
+          "per_request": [
+            { "check": "db_queries_per_request", "max": 50, "label": "Queries per Worker invocation", "source": "https://developers.cloudflare.com/d1/platform/limits/" }
+          ]
+        },
+        "paid": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": [
+            "Billed under the Workers Paid plan ($5 base counted there).",
+            "Single-threaded per database; 10 GB max per database (cannot be increased) — shard across databases beyond that."
+          ],
+          "limits": [
+            { "metric": "db_rows_read", "period": "month", "value": 25000000000, "kind": "included", "overage_usd": 0.001, "per": 1000000, "label": "Rows read", "source": "https://developers.cloudflare.com/workers/platform/pricing/" },
+            { "metric": "db_rows_written", "period": "month", "value": 50000000, "kind": "included", "overage_usd": 1.00, "per": 1000000, "label": "Rows written", "source": "https://developers.cloudflare.com/workers/platform/pricing/" },
+            { "metric": "db_storage_gb", "period": "total", "value": 10, "kind": "hard", "label": "Max database size", "source": "https://developers.cloudflare.com/d1/platform/limits/" },
+            { "metric": "db_qps", "period": "peak", "formula": "single_thread", "kind": "hard", "label": "Single-threaded throughput (1000 / query ms)", "source": "https://developers.cloudflare.com/d1/platform/limits/" }
+          ],
+          "per_request": [
+            { "check": "db_queries_per_request", "max": 1000, "label": "Queries per Worker invocation", "source": "https://developers.cloudflare.com/d1/platform/limits/" }
+          ]
+        }
+      }
+    },
+    "cloudflare-kv": {
+      "name": "Cloudflare Workers KV",
+      "plans": {
+        "free": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": ["Writes to the same key: 1 per second on every plan."],
+          "limits": [
+            { "metric": "kv_reads", "period": "day", "value": 100000, "kind": "hard", "label": "Reads per day", "source": "https://developers.cloudflare.com/kv/platform/limits/" },
+            { "metric": "kv_writes", "period": "day", "value": 1000, "kind": "hard", "label": "Writes per day", "source": "https://developers.cloudflare.com/kv/platform/limits/" }
+          ]
+        },
+        "paid": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": ["Billed under Workers Paid. Writes to the same key: 1 per second."],
+          "limits": [
+            { "metric": "kv_reads", "period": "month", "value": 10000000, "kind": "included", "overage_usd": 0.50, "per": 1000000, "label": "Reads", "source": "https://developers.cloudflare.com/workers/platform/pricing/" },
+            { "metric": "kv_writes", "period": "month", "value": 1000000, "kind": "included", "overage_usd": 5.00, "per": 1000000, "label": "Writes", "source": "https://developers.cloudflare.com/workers/platform/pricing/" }
+          ]
+        }
+      }
+    },
+    "supabase": {
+      "name": "Supabase",
+      "plans": {
+        "free": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": [
+            "Free projects are paused after 1 week of inactivity; limit of 2 active projects.",
+            "Nano compute: shared CPU, up to 0.5 GB RAM."
+          ],
+          "limits": [
+            { "metric": "db_backend_conns", "period": "peak", "value": 60, "kind": "hard", "label": "Direct DB connections (Nano)", "source": "https://supabase.com/docs/guides/platform/compute-and-disk" },
+            { "metric": "db_pool_clients", "period": "peak", "value": 200, "kind": "hard", "label": "Pooler max clients (Nano)", "source": "https://supabase.com/docs/guides/platform/compute-and-disk" },
+            { "metric": "db_storage_gb", "period": "total", "value": 0.5, "kind": "hard", "label": "Database size", "source": "https://supabase.com/pricing" },
+            { "metric": "egress_gb", "period": "month", "value": 5, "kind": "hard", "label": "Egress", "source": "https://supabase.com/pricing" },
+            { "metric": "auth_mau", "period": "month", "value": 50000, "kind": "hard", "label": "Auth MAU", "source": "https://supabase.com/pricing" },
+            { "metric": "realtime_conns", "period": "peak", "value": 200, "kind": "hard", "label": "Realtime concurrent connections", "source": "https://supabase.com/docs/guides/realtime/quotas" },
+            { "metric": "realtime_msgs_per_s", "period": "peak", "value": 100, "kind": "hard", "label": "Realtime messages per second", "source": "https://supabase.com/docs/guides/realtime/quotas" },
+            { "metric": "realtime_msgs", "period": "month", "value": 2000000, "kind": "hard", "label": "Realtime messages", "source": "https://supabase.com/pricing" },
+            { "metric": "invocations", "period": "month", "value": 500000, "kind": "hard", "label": "Edge Function invocations (only if functions run on Supabase)", "applies_if": "functions_on_this_platform", "source": "https://supabase.com/pricing" }
+          ],
+          "per_request": [
+            { "check": "duration_s", "max": 150, "label": "Edge Function wall clock", "applies_if": "functions_on_this_platform", "source": "https://supabase.com/docs/guides/functions/limits" },
+            { "check": "cpu_ms", "max": 2000, "label": "Edge Function CPU per request", "applies_if": "functions_on_this_platform", "source": "https://supabase.com/docs/guides/functions/limits" }
+          ]
+        },
+        "pro": {
+          "base_usd": 25,
+          "credit_usd": 10,
+          "credit_note": "$10 compute credit covers one Micro instance.",
+          "spend_cap_default": true,
+          "commercial_use": true,
+          "notes": [
+            "Spend cap is ON by default: included quotas then act as hard limits until the cap is turned off.",
+            "Micro compute (1 GB RAM) is the default; bigger compute raises connection limits — see compute_tiers.",
+            "Projects are never paused on paid plans."
+          ],
+          "limits": [
+            { "metric": "db_backend_conns", "period": "peak", "value": 60, "kind": "hard", "label": "Direct DB connections (Micro)", "source": "https://supabase.com/docs/guides/platform/compute-and-disk" },
+            { "metric": "db_pool_clients", "period": "peak", "value": 200, "kind": "hard", "label": "Pooler max clients (Micro)", "source": "https://supabase.com/docs/guides/platform/compute-and-disk" },
+            { "metric": "db_storage_gb", "period": "total", "value": 8, "kind": "included", "overage_usd": 0.125, "per": 1, "label": "Disk (per GB-month)", "source": "https://supabase.com/pricing" },
+            { "metric": "egress_gb", "period": "month", "value": 250, "kind": "included", "overage_usd": 0.09, "per": 1, "label": "Egress", "source": "https://supabase.com/pricing" },
+            { "metric": "auth_mau", "period": "month", "value": 100000, "kind": "included", "overage_usd": 0.00325, "per": 1, "label": "Auth MAU", "source": "https://supabase.com/pricing" },
+            { "metric": "realtime_conns", "period": "peak", "value": 500, "kind": "included", "overage_usd": 10, "per": 1000, "billing": "peak_monthly", "label": "Realtime concurrent connections", "source": "https://supabase.com/pricing" },
+            { "metric": "realtime_conns", "period": "peak", "value": 10000, "kind": "hard", "label": "Realtime connections ceiling (spend cap off)", "source": "https://supabase.com/docs/guides/realtime/quotas" },
+            { "metric": "realtime_msgs_per_s", "period": "peak", "value": 500, "kind": "hard", "label": "Realtime messages per second", "source": "https://supabase.com/docs/guides/realtime/quotas" },
+            { "metric": "realtime_msgs", "period": "month", "value": 5000000, "kind": "included", "overage_usd": 2.50, "per": 1000000, "label": "Realtime messages", "source": "https://supabase.com/pricing" },
+            { "metric": "invocations", "period": "month", "value": 2000000, "kind": "included", "overage_usd": 2.00, "per": 1000000, "label": "Edge Function invocations", "applies_if": "functions_on_this_platform", "source": "https://supabase.com/pricing" }
+          ],
+          "per_request": [
+            { "check": "duration_s", "max": 400, "label": "Edge Function wall clock", "applies_if": "functions_on_this_platform", "source": "https://supabase.com/docs/guides/functions/limits" },
+            { "check": "cpu_ms", "max": 2000, "label": "Edge Function CPU per request", "applies_if": "functions_on_this_platform", "source": "https://supabase.com/docs/guides/functions/limits" }
+          ],
+          "compute_tiers": {
+            "source": "https://supabase.com/docs/guides/platform/compute-and-disk",
+            "columns": ["tier", "usd_month", "cpu", "ram_gb", "direct_conns", "pooler_clients"],
+            "rows": [
+              ["micro", 10, "shared", 1, 60, 200],
+              ["small", 15, "shared", 2, 90, 400],
+              ["medium", 60, "shared", 4, 120, 600],
+              ["large", 110, "2 dedicated", 8, 160, 800],
+              ["xl", 210, "4", 16, 240, 1000],
+              ["2xl", 410, "8", 32, 380, 1500],
+              ["4xl", 960, "16", 64, 480, 3000]
+            ]
+          }
+        }
+      }
+    },
+    "firebase": {
+      "name": "Firebase",
+      "plans": {
+        "spark": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": [
+            "Spark quotas are hard: operations fail once a daily quota is used.",
+            "Cloud Functions quotas are listed only under Blaze on the pricing page."
+          ],
+          "limits": [
+            { "metric": "db_rows_read", "period": "day", "value": 50000, "kind": "hard", "label": "Firestore document reads", "source": "https://firebase.google.com/pricing" },
+            { "metric": "db_rows_written", "period": "day", "value": 20000, "kind": "hard", "label": "Firestore document writes", "source": "https://firebase.google.com/pricing" },
+            { "metric": "db_storage_gb", "period": "total", "value": 1, "kind": "hard", "label": "Firestore stored data (GiB)", "source": "https://firebase.google.com/pricing" },
+            { "metric": "realtime_conns", "period": "peak", "value": 100, "kind": "hard", "label": "Realtime Database simultaneous connections", "source": "https://firebase.google.com/pricing" },
+            { "metric": "egress_gb", "period": "day", "value": 0.36, "kind": "hard", "label": "Hosting data transfer (360 MB/day)", "source": "https://firebase.google.com/pricing" },
+            { "metric": "auth_mau", "period": "month", "value": 50000, "kind": "hard", "label": "Auth MAU", "source": "https://firebase.google.com/pricing" }
+          ]
+        },
+        "blaze": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": [
+            "Pay as you go: the Spark no-cost amounts are included, then Google Cloud rates.",
+            "Firestore per-operation prices were not on the pricing page that was read — cost for reads/writes beyond the free amounts is left out; check the source."
+          ],
+          "limits": [
+            { "metric": "db_rows_read", "period": "day", "value": 50000, "kind": "included", "overage_usd": null, "per": 100000, "label": "Firestore document reads", "source": "https://firebase.google.com/pricing" },
+            { "metric": "db_rows_written", "period": "day", "value": 20000, "kind": "included", "overage_usd": null, "per": 100000, "label": "Firestore document writes", "source": "https://firebase.google.com/pricing" },
+            { "metric": "realtime_conns", "period": "peak", "value": 200000, "kind": "hard", "label": "Realtime Database simultaneous connections (per database)", "source": "https://firebase.google.com/pricing" },
+            { "metric": "egress_gb", "period": "day", "value": 0.36, "kind": "included", "overage_usd": 0.15, "per": 1, "label": "Hosting data transfer", "source": "https://firebase.google.com/pricing" },
+            { "metric": "invocations", "period": "month", "value": 2000000, "kind": "included", "overage_usd": 0.40, "per": 1000000, "label": "Cloud Functions invocations", "applies_if": "functions_on_this_platform", "source": "https://firebase.google.com/pricing" },
+            { "metric": "auth_mau", "period": "month", "value": 50000, "kind": "included", "overage_usd": null, "per": 1, "label": "Auth MAU (then Google Cloud pricing)", "source": "https://firebase.google.com/pricing" }
+          ]
+        }
+      }
+    },
+    "neon": {
+      "name": "Neon Postgres",
+      "plans": {
+        "free": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": [
+            "Scale to zero after 5 minutes idle (cannot be disabled): the first query after idle waits for a cold start.",
+            "Running out of CU-hours or egress suspends compute until the next billing period.",
+            "Autoscaling up to 2 CU (8 GB RAM); connection numbers below are at 2 CU."
+          ],
+          "limits": [
+            { "metric": "db_awake_cu_hours", "period": "month", "value": 100, "kind": "hard", "label": "Compute CU-hours per project", "source": "https://neon.com/docs/introduction/plans" },
+            { "metric": "egress_gb", "period": "month", "value": 5, "kind": "hard", "label": "Public network transfer", "source": "https://neon.com/pricing" },
+            { "metric": "db_storage_gb", "period": "total", "value": 1, "kind": "hard", "label": "Storage per project", "source": "https://neon.com/pricing" },
+            { "metric": "db_backend_conns", "period": "peak", "value": 755, "kind": "hard", "label": "Pooled server connections at 2 CU (90% of 839)", "source": "https://neon.com/docs/connect/connection-pooling" },
+            { "metric": "db_pool_clients", "period": "peak", "value": 10000, "kind": "hard", "label": "PgBouncer max client connections", "source": "https://neon.com/docs/connect/connection-pooling" }
+          ]
+        },
+        "launch": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": [
+            "Usage billed, no monthly minimum. Autoscaling up to 16 CU; scale to zero can be disabled.",
+            "Storage $0.35/GB-month; egress 500 GB per project included then $0.10/GB."
+          ],
+          "limits": [
+            { "metric": "db_awake_cu_hours", "period": "month", "value": 0, "kind": "included", "overage_usd": 0.106, "per": 1, "label": "Compute CU-hours", "source": "https://neon.com/pricing" },
+            { "metric": "egress_gb", "period": "month", "value": 500, "kind": "included", "overage_usd": 0.10, "per": 1, "label": "Public network transfer", "source": "https://neon.com/pricing" },
+            { "metric": "db_storage_gb", "period": "total", "value": 0, "kind": "included", "overage_usd": 0.35, "per": 1, "label": "Storage (GB-month)", "source": "https://neon.com/pricing" },
+            { "metric": "db_pool_clients", "period": "peak", "value": 10000, "kind": "hard", "label": "PgBouncer max client connections", "source": "https://neon.com/docs/connect/connection-pooling" }
+          ]
+        }
+      }
+    },
+    "aws-lambda": {
+      "name": "AWS Lambda",
+      "plans": {
+        "default": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": [
+            "1000 concurrent executions per Region is the default quota (can be raised; new accounts start lower).",
+            "Scaling rate: 1000 execution environments every 10 seconds per function.",
+            "Prices are x86, US East (N. Virginia)."
+          ],
+          "limits": [
+            { "metric": "fn_concurrency", "period": "peak", "value": 1000, "kind": "hard", "label": "Concurrent executions per Region (default quota)", "source": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html" },
+            { "metric": "invocations", "period": "month", "value": 1000000, "kind": "included", "overage_usd": 0.20, "per": 1000000, "label": "Requests", "source": "https://aws.amazon.com/lambda/pricing/" },
+            { "metric": "gb_seconds", "period": "month", "value": 400000, "kind": "included", "overage_usd": 0.0000166667, "per": 1, "label": "Compute GB-seconds", "source": "https://aws.amazon.com/lambda/pricing/" }
+          ],
+          "per_request": [
+            { "check": "duration_s", "max": 900, "label": "Timeout", "source": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html" },
+            { "check": "payload_mb", "max": 6, "label": "Synchronous payload", "source": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html" }
+          ]
+        }
+      }
+    },
+    "netlify": {
+      "name": "Netlify",
+      "plans": {
+        "free": {
+          "base_usd": 0,
+          "credits": 300,
+          "commercial_use": true,
+          "notes": [
+            "Credit plan: web requests 2 credits / 10k, bandwidth 20 credits / GB, compute 10 credits / GB-hour, production deploy 15 credits.",
+            "What happens when free credits run out is not stated on the pricing page."
+          ],
+          "limits": [
+            { "metric": "credits", "period": "month", "value": 300, "kind": "hard", "label": "Monthly credits", "source": "https://www.netlify.com/pricing/" }
+          ]
+        },
+        "personal": {
+          "base_usd": 9,
+          "credits": 1000,
+          "credit_pack": { "credits": 500, "usd": 5 },
+          "commercial_use": true,
+          "notes": ["Extra credits: 500 for $5 (auto recharge)."],
+          "limits": [
+            { "metric": "credits", "period": "month", "value": 1000, "kind": "included", "overage_usd": 5, "per": 500, "label": "Monthly credits", "source": "https://www.netlify.com/pricing/" }
+          ]
+        },
+        "pro": {
+          "base_usd": 20,
+          "credits": 3000,
+          "commercial_use": true,
+          "notes": ["Extra credits: 1500 for $10 (auto recharge). Functions memory up to 4 GB."],
+          "limits": [
+            { "metric": "credits", "period": "month", "value": 3000, "kind": "included", "overage_usd": 10, "per": 1500, "label": "Monthly credits", "source": "https://www.netlify.com/pricing/" }
+          ]
+        }
+      },
+      "credit_costs": { "requests_per_10k": 2, "egress_gb": 20, "compute_gb_hour": 10, "source": "https://www.netlify.com/pricing/" }
+    },
+    "upstash-redis": {
+      "name": "Upstash Redis",
+      "plans": {
+        "free": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": ["250 MB data, 10 GB monthly bandwidth, 1 free database per account."],
+          "limits": [
+            { "metric": "redis_commands", "period": "month", "value": 500000, "kind": "hard", "label": "Monthly commands", "source": "https://upstash.com/pricing/redis" },
+            { "metric": "redis_cmds_per_s", "period": "peak", "value": 10000, "kind": "hard", "label": "Max commands per second", "source": "https://upstash.com/pricing/redis" }
+          ]
+        },
+        "payg": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": ["Storage $0.25/GB beyond the first GB; max data 100 GB."],
+          "limits": [
+            { "metric": "redis_commands", "period": "month", "value": 0, "kind": "included", "overage_usd": 0.20, "per": 100000, "label": "Commands", "source": "https://upstash.com/pricing/redis" },
+            { "metric": "redis_cmds_per_s", "period": "peak", "value": 10000, "kind": "hard", "label": "Max commands per second", "source": "https://upstash.com/pricing/redis" }
+          ]
+        }
+      }
+    },
+    "railway": {
+      "name": "Railway",
+      "kind": "server",
+      "plans": {
+        "free": { "base_usd": 0, "credit_usd": 1, "max_vcpu": 1, "max_ram_gb": 0.5, "max_replicas": 1, "commercial_use": true, "notes": ["$1/month credits."], "source": "https://railway.com/pricing" },
+        "hobby": { "base_usd": 5, "credit_usd": 5, "max_vcpu": 48, "max_ram_gb": 48, "max_replicas": 6, "commercial_use": true, "notes": ["$5 included usage."], "source": "https://railway.com/pricing" },
+        "pro": { "base_usd": 20, "credit_usd": 20, "max_vcpu": 1000, "max_ram_gb": 1000, "max_replicas": 42, "commercial_use": true, "notes": ["$20 included usage."], "source": "https://railway.com/pricing" }
+      },
+      "usage": { "vcpu_month_usd": 20, "ram_gb_month_usd": 10, "egress_gb_usd": 0.05, "source": "https://railway.com/pricing" }
+    },
+    "fly": {
+      "name": "Fly.io",
+      "kind": "server",
+      "plans": {
+        "payg": {
+          "base_usd": 0,
+          "commercial_use": true,
+          "notes": ["No free tier for new organizations (trial: 2 hours of runtime or 7 days).", "Machines billed per second while running; prices for iad/ewr."],
+          "machine_prices_usd_month": { "shared-cpu-1x-256mb": 2.19, "shared-cpu-1x-512mb": 3.69, "shared-cpu-1x-1gb": 6.70 },
+          "source": "https://docs.fly.io/about/pricing"
+        }
+      },
+      "usage": { "egress_gb_usd": 0.02, "egress_note": "$0.02/GB North America & Europe, $0.04 Asia Pacific/Oceania/South America, $0.12 Africa/India", "source": "https://docs.fly.io/about/pricing" }
+    },
+    "render": {
+      "name": "Render",
+      "kind": "server",
+      "plans": {
+        "free": {
+          "base_usd": 0,
+          "max_vcpu": 0.1,
+          "max_ram_gb": 0.5,
+          "max_replicas": 1,
+          "commercial_use": true,
+          "notes": [
+            "Free instance: 0.1 CPU, 512 MB RAM.",
+            "Spins down after 15 minutes without traffic; the next request waits about one minute.",
+            "750 free instance hours per workspace per month.",
+            "Free Postgres: 1 GB, expires 30 days after creation."
+          ],
+          "source": "https://render.com/docs/free"
+        }
+      },
+      "usage": { "note": "Paid instance specs and prices were not readable on the pricing page; ask the user or check https://render.com/pricing." }
+    },
+    "vps": {
+      "name": "Self-managed server / VPS / home server",
+      "kind": "server",
+      "plans": {
+        "custom": { "base_usd": 0, "commercial_use": true, "notes": ["Price and size come from the user."] }
+      }
+    }
+  }
+}
